@@ -12,13 +12,22 @@ from typing import Optional
 
 class VotingAppWindow(object):
     def setupUi(self, MainWindow: QtWidgets.QMainWindow) -> None:
+        """
+        The user interface for voting window.
+
+        Args:
+            MainWindow(QtWidgets.QMainWindow): The main window of the app.
+        """
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(267, 325)
         MainWindow.setFixedSize(267, 325)
 
+
+        # Central widget for the Main Window
         self.centralwidget = QtWidgets.QWidget(parent=MainWindow)
         self.centralwidget.setObjectName("centralwidget")
 
+        #Submit Button
         self.submit1 = QtWidgets.QPushButton(parent=self.centralwidget)
         self.submit1.setGeometry(QtCore.QRect(90, 190, 91, 23))
         font = QtGui.QFont()
@@ -29,6 +38,7 @@ class VotingAppWindow(object):
         self.submit1.setAutoRepeat(True)
         self.submit1.setObjectName("submit1")
 
+        #Voting Label Configuration
         self.votelabel = QtWidgets.QLabel(parent=self.centralwidget)
         self.votelabel.setGeometry(QtCore.QRect(0, 0, 261, 41))
         font = QtGui.QFont()
@@ -42,6 +52,7 @@ class VotingAppWindow(object):
         self.votelabel.setIndent(6)
         self.votelabel.setObjectName("votelabel")
 
+        #Voting Mascot Little Red
         self.little_red = QtWidgets.QRadioButton(parent=self.centralwidget)
         self.little_red.setGeometry(QtCore.QRect(90, 110, 82, 20))
         font = QtGui.QFont()
@@ -51,6 +62,7 @@ class VotingAppWindow(object):
         self.little_red.setFont(font)
         self.little_red.setObjectName("little_red")
 
+        #Voting Mascot Herby Mascot
         self.herby = QtWidgets.QRadioButton(parent=self.centralwidget)
         self.herby.setGeometry(QtCore.QRect(90, 140, 82, 17))
         font = QtGui.QFont()
@@ -61,6 +73,7 @@ class VotingAppWindow(object):
         self.herby.setIconSize(QtCore.QSize(18, 18))
         self.herby.setObjectName("herby")
 
+        #Mascot voting Label
         self.mascot_voting = QtWidgets.QLabel(parent=self.centralwidget)
         self.mascot_voting.setGeometry(QtCore.QRect(10, 70, 251, 21))
         font = QtGui.QFont()
@@ -73,10 +86,12 @@ class VotingAppWindow(object):
         self.mascot_voting.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.mascot_voting.setObjectName("mascot_voting")
 
+        # Text input user ID
         self.textEdit = QtWidgets.QLineEdit(parent=self.centralwidget)
         self.textEdit.setGeometry(QtCore.QRect(60, 40, 171, 21))
         self.textEdit.setObjectName("textEdit")
 
+        # Text Label User ID
         self.id_1 = QtWidgets.QLabel(parent=self.centralwidget)
         self.id_1.setGeometry(QtCore.QRect(30, 40, 31, 16))
         font = QtGui.QFont()
@@ -87,6 +102,7 @@ class VotingAppWindow(object):
         self.id_1.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.id_1.setObjectName("id_1")
 
+        # Status message label
         self.status_message_label = QtWidgets.QLabel(parent=self.centralwidget)
         self.status_message_label.setGeometry(QtCore.QRect(60, 220, 171, 21))
         font = QtGui.QFont()
@@ -99,11 +115,13 @@ class VotingAppWindow(object):
 
         MainWindow.setCentralWidget(self.centralwidget)
 
+        # Menu Bar
         self.menubar = QtWidgets.QMenuBar(parent=MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 267, 21))
         self.menubar.setObjectName("menubar")
         MainWindow.setMenuBar(self.menubar)
 
+        #Status Bar
         self.statusbar = QtWidgets.QStatusBar(parent=MainWindow)
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
@@ -114,6 +132,9 @@ class VotingAppWindow(object):
         self.submit1.clicked.connect(self.on_submit_vote)
 
     def retranslateUi(self, MainWindow: QtWidgets.QMainWindow) -> None:
+        """
+        Retranslate text for the user interface
+        """
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "Voting Application"))
         self.submit1.setText(_translate("MainWindow", "SUBMIT VOTE"))
@@ -124,46 +145,68 @@ class VotingAppWindow(object):
         self.id_1.setText(_translate("MainWindow", "ID"))
 
     def on_submit_vote(self) -> None:
-        user_id: str = self.textEdit.text().strip()
-        selected_mascot: Optional[str] = None
+        """
+        Checks the voters ID and process vote to voting.py
+        """
+        user_id: str = self.textEdit.text().strip() # Gets the user ID
+        selected_mascot: Optional[str] = None #Start the mascot selection
 
-        if self.little_red.isChecked():
+        # Checks the RadioButtons
+        if self.little_red.isChecked(): #Little red radio button
             selected_mascot = "Little Red"
-        elif self.herby.isChecked():
+        elif self.herby.isChecked(): # Herby radio button
             selected_mascot = "Herby"
 
+        #Confirms a User Id is entered.
         if not user_id:
             self.update_status_message("Enter Your School ID", "red")
             return
 
+        #Confirm the right about of numbers are entered.
         if len(user_id) != 8:
             self.update_status_message("Enter a Valid ID", "red")
             self.textEdit.clear()
             return
 
+        # Confirms a mascot was selected
         if selected_mascot is None:
             self.flash_status_message("Select Mascot", "red")
             return
 
+        # Checks if the User ID is able to vote
         result: str = check_and_update_vote(user_id, selected_mascot)
 
+        # If and else if user can vote
         if "can vote" in result:
             self.update_status_message("Vote Submitted", "green")
         else:
             self.update_status_message("Already Voted", "red")
 
+        # Clear text
         self.textEdit.clear()
+
+        # Clear radio buttons
         self.little_red.setChecked(False)
         self.herby.setChecked(False)
 
+        # Refresh RadioButtons
         self.little_red.update()
         self.herby.update()
 
+
     def update_status_message(self, message: str, color: str) -> None:
+        """
+        Displays message after vote
+        """
         self.status_message_label.setText(message)
         self.status_message_label.setStyleSheet(f"color: {color};")
 
+
+    # I was not able to get the flashing message to work and removed the code.
     def flash_status_message(self, message: str, color: str) -> None:
+        """
+        Displays red message after vote
+        """
         self.status_message_label.setText(message)
         self.status_message_label.setStyleSheet(f"color: {color};")
 
