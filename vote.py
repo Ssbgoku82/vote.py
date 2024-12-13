@@ -134,14 +134,9 @@ class VotingAppWindow(object):
 
         if not user_id:
             self.update_status_message("Enter Your School ID", "red")
-            self.little_red.setChecked(False)
-            self.herby.setChecked(False)
-
-            self.little_red.update()
-            self.herby.update()
             return
 
-        if len(user_id) < 5:
+        if len(user_id) != 8:
             self.update_status_message("Enter a Valid ID", "red")
             self.textEdit.clear()
             return
@@ -151,6 +146,7 @@ class VotingAppWindow(object):
             return
 
         result: str = check_and_update_vote(user_id, selected_mascot)
+
         if "can vote" in result:
             self.update_status_message("Vote Submitted", "green")
         else:
@@ -170,4 +166,5 @@ class VotingAppWindow(object):
     def flash_status_message(self, message: str, color: str) -> None:
         self.status_message_label.setText(message)
         self.status_message_label.setStyleSheet(f"color: {color};")
+
 
